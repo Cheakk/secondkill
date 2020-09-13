@@ -21,7 +21,7 @@ public class LimitAspect {
 	private static   RateLimiter rateLimiter = RateLimiter.create(5.0);
 	
 	//Service层切点  限流
-	@Pointcut("@annotation(com.itstyle.seckill.common.aop.ServiceLimit)")  
+	@Pointcut("@annotation(com.eden.seckill.common.aop.ServiceLimit)")  
 	public void ServiceAspect() {
 		
 	}

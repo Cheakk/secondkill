@@ -17,7 +17,7 @@ public class SwaggerConfig {
 	@Bean
 	public Docket userApi() {
 		return new Docket(DocumentationType.SWAGGER_2).groupName("秒杀案例").apiInfo(apiInfo()).select()
-				.apis(RequestHandlerSelectors.basePackage("com.itstyle.seckill.web")).paths(PathSelectors.any()).build();
+				.apis(RequestHandlerSelectors.basePackage("com.eden.seckill.web")).paths(PathSelectors.any()).build();
 	}
 	// 预览地址:swagger-ui.html
 	private ApiInfo apiInfo() {

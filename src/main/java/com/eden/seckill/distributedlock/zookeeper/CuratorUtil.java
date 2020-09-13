@@ -15,7 +15,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
  * 开始执行main方法，通过ZooInspector监控/curator/lock下的节点如下图：
  */
 public class CuratorUtil {
-    private static String address = "192.168.1.180:2181";
+    private static String address = "101.133.167.64:2181";
 	
     public static void main(String[] args) {
 		//1、重试策略：初试时间为1s 重试3次

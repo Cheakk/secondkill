@@ -14,7 +14,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
  */
 public class ZkLockUtil{
 	
-	private static String address = "192.168.1.180:2181";
+	private static String address = "101.133.167.64:2181";
 	
 	public static CuratorFramework client;
 	

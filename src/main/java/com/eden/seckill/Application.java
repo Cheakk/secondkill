@@ -1,4 +1,4 @@
-package com.eden.seckill.learn;
+package com.eden.seckill;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

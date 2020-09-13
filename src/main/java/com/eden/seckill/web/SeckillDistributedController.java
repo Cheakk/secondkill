@@ -1,7 +1,4 @@
 package com.eden.seckill.web;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -19,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eden.seckill.common.entity.Result;
 import com.eden.seckill.common.redis.RedisUtil;
 import com.eden.seckill.queue.activemq.ActiveMQSender;
-import com.eden.seckill.queue.kafka.KafkaSender;
 import com.eden.seckill.queue.redis.RedisSender;
 import com.eden.seckill.service.ISeckillDistributedService;
 import com.eden.seckill.service.ISeckillService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 @Api(tags ="分布式秒杀")
 @RestController
 @RequestMapping("/seckillDistributed")
@@ -40,8 +39,6 @@ public class SeckillDistributedController {
 	private ISeckillDistributedService seckillDistributedService;
 	@Autowired
 	private RedisSender redisSender;
-	@Autowired
-	private KafkaSender kafkaSender;
 	@Autowired
 	private ActiveMQSender activeMQSender;
 
@@ -115,37 +112,6 @@ public class SeckillDistributedController {
 					if(redisUtil.getValue(killId+"")==null){
 						//思考如何返回给用户信息ws
 						redisSender.sendChannelMess("seckill",killId+";"+userId);
-					}else{
-						//秒杀结束
-					}
-				}
-			};
-			executor.execute(task);
-		}
-		try {
-			Thread.sleep(10000);
-			redisUtil.cacheValue(killId+"", null);
-			Long  seckillCount = seckillService.getSeckillCount(seckillId);
-			LOGGER.info("一共秒杀出{}件商品",seckillCount);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		return Result.ok();
-	}
-	@ApiOperation(value="秒杀四(Kafka分布式队列)",nickname="科帮网")
-	@PostMapping("/startKafkaQueue")
-	public Result startKafkaQueue(long seckillId){
-		seckillService.deleteSeckill(seckillId);
-		final long killId =  seckillId;
-		LOGGER.info("开始秒杀四");
-		for(int i=0;i<1000;i++){
-			final long userId = i;
-			Runnable task = new Runnable() {
-				@Override
-				public void run() {
-					if(redisUtil.getValue(killId+"")==null){
-						//思考如何返回给用户信息ws
-						kafkaSender.sendChannelMess("seckill",killId+";"+userId);
 					}else{
 						//秒杀结束
 					}
