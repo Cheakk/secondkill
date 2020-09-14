@@ -1,14 +1,14 @@
 package com.eden.seckill.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
 import java.util.List;
 
-import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.rocketmq.client.exception.MQBrokerException;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -16,6 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
@@ -23,8 +24,12 @@ import com.eden.seckill.common.entity.Result;
 import com.eden.seckill.common.entity.Seckill;
 import com.eden.seckill.common.utils.HttpClient;
 import com.eden.seckill.common.utils.IPUtils;
-import com.eden.seckill.queue.activemq.ActiveMQSender;
+import com.eden.seckill.queue.activemq.Producer;
+import com.eden.seckill.queue.activemq.RocketMqConfig;
 import com.eden.seckill.service.ISeckillService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(tags = "秒杀商品")
 @RestController
@@ -35,7 +40,7 @@ public class SeckillPageController {
 	private ISeckillService seckillService;
 	
 	@Autowired
-	private ActiveMQSender activeMQSender;
+	private Producer producer;
 	
 	@Autowired
 	private HttpClient httpClient;
@@ -56,7 +61,7 @@ public class SeckillPageController {
 	}
 	
 	@RequestMapping("/startSeckill")
-    public Result  startSeckill(String ticket,String randstr,HttpServletRequest request) {
+    public Result  startSeckill(String ticket,String randstr,HttpServletRequest request,@RequestParam ("userid")int userid) throws Exception{
         HttpMethod method =HttpMethod.POST;
         MultiValueMap<String, String> params= new LinkedMultiValueMap<String, String>();
         params.add("aid", aid);
@@ -75,9 +80,10 @@ public class SeckillPageController {
         JSONObject json = JSONObject.parseObject(msg);
         String response = (String) json.get("response");
         if("1".equals(response)){
-        	//进入队列、假数据而已
-        	Destination destination = new ActiveMQQueue("seckill.queue");
-        	activeMQSender.sendChannelMess(destination,1000+";"+1);
+        	// 创建生产信息
+			Message message = new Message(RocketMqConfig.TOPIC, "testtag", (1000 +";"+ userid).getBytes());
+			// 发送
+			SendResult sendResult = producer.getProducer().send(message);
         	return Result.ok();
         }else{
         	return Result.error("验证失败");
