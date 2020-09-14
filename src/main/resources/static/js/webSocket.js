@@ -1,7 +1,7 @@
 $(function(){
 	socket.init();
 });
-var basePath = "ws://101.133.167.64:8080/seckill/";
+var basePath = "ws://101.133.167.64:8666/seckill/";
 socket = {
 	webSocket : "",
 	init : function() {
