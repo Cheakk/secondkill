@@ -38,14 +38,26 @@ public class Consumer {
 	@Autowired
 	private RedisUtil redisUtil;
 
-	public Consumer() throws MQClientException {
+	public Consumer() {
 
 		consumer = new DefaultMQPushConsumer(CONSUMER_GROUP);
 		consumer.setNamesrvAddr(RocketMqConfig.NAME_SERVER);
 		// 消费模式:一个新的订阅组第一次启动从队列的最后位置开始消费 后续再启动接着上次消费的进度开始消费
 		consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
 		// 订阅主题和 标签（ * 代表所有标签)下信息
-		consumer.subscribe("seckillorder", "*");
+		try {
+			try {
+				consumer.subscribe("seckillorder", "*");
+			} catch (MQClientException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				log.info("subscribe消费报错，错误为："+e1.getMessage());
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			log.info("subscribe消费报错，错误为："+e1.getMessage());
+		}
 		// //注册消费的监听 并在此监听中消费信息，并返回消费的状态信息
 		consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
 			// msgs中只收集同一个topic，同一个tag，并且key相同的message
@@ -74,7 +86,12 @@ public class Consumer {
 			}
 			return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
 		});
-		consumer.start();
+		try {
+			consumer.start();
+		} catch (MQClientException e) {
+			// TODO Auto-generated catch block
+			log.info("start消费报错，错误为："+e.getMessage());
+		}
 		System.out.println("消费者 启动成功=======");
 	}
 }
