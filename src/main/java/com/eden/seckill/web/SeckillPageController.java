@@ -1,6 +1,5 @@
 package com.eden.seckill.web;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,7 +64,6 @@ public class SeckillPageController {
 	
 	@RequestMapping("/startSeckill")
     public Result  startSeckill(String ticket,String randstr,HttpServletRequest request,@RequestParam ("userid")int userid) {
-        HttpMethod method =HttpMethod.POST;
         MultiValueMap<String, String> params= new LinkedMultiValueMap<String, String>();
         params.add("aid", aid);
         params.add("AppSecretKey", appSecretKey);

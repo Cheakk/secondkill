@@ -19,9 +19,15 @@
 <body>
 <div id="app" v-cloak>
      <div style="margin-bottom: 8px;margin-top: 8px;margin-left: 20px;margin-right: 20px">
-		<i-input placeholder="商品名称"  style="width: 300px"></i-input>
-		<i-button type="primary" icon="ios-search" >搜索</i-button>
-        <i-button type="primary"  icon="close">重置</i-button>
+       <div th:fragment="logout" class="logout" sec:authorize="isAuthenticated()">
+            Logged in user: <span sec:authentication="name"></span> |
+            Roles: <span sec:authentication="principal.authorities"></span>
+            <div>
+                <form action="#" th:action="@{/logout}" method="post">
+                    <input type="submit" value="Logout" />
+                </form>
+            </div>
+        </div>
 	</div>
 	<div style="margin-bottom: 8px;margin-top: 8px;margin-left: 20px;margin-right: 20px">
 		<template> 
