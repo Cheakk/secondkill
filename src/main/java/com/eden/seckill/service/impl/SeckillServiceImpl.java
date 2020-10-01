@@ -39,7 +39,7 @@ public class SeckillServiceImpl implements ISeckillService {
 
 	@Override
 	public Seckill getById(long seckillId) {
-		return seckillRepository.findOne(seckillId);
+		return seckillRepository.findById(seckillId).get();
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class SeckillServiceImpl implements ISeckillService {
 	@Override
 	@Transactional
 	public Result startSeckilDBOCC(long seckillId, long userId, long number) {
-		Seckill kill = seckillRepository.findOne(seckillId);
+		Seckill kill = seckillRepository.findById(seckillId).get();
 		//if(kill.getNumber()>0){
 		if(kill.getNumber()>=number){//剩余的数量应该要大于等于秒杀的数量
 			//乐观锁

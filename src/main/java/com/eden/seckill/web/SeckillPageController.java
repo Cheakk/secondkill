@@ -1,5 +1,6 @@
 package com.eden.seckill.web;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,10 +31,12 @@ import com.eden.seckill.service.ISeckillService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @Api(tags = "秒杀商品")
 @RestController
 @RequestMapping("/seckillPage")
+@Slf4j
 public class SeckillPageController {
 	
 	@Autowired
@@ -61,7 +64,7 @@ public class SeckillPageController {
 	}
 	
 	@RequestMapping("/startSeckill")
-    public Result  startSeckill(String ticket,String randstr,HttpServletRequest request,@RequestParam ("userid")int userid) throws Exception{
+    public Result  startSeckill(String ticket,String randstr,HttpServletRequest request,@RequestParam ("userid")int userid) {
         HttpMethod method =HttpMethod.POST;
         MultiValueMap<String, String> params= new LinkedMultiValueMap<String, String>();
         params.add("aid", aid);
@@ -83,7 +86,26 @@ public class SeckillPageController {
         	// 创建生产信息
 			Message message = new Message(RocketMqConfig.TOPIC, "testtag", (1000 +";"+ userid).getBytes());
 			// 发送
-			SendResult sendResult = producer.getProducer().send(message);
+			try {
+				SendResult sendResult = producer.getProducer().send(message);
+			} catch (MQClientException e) {
+				// TODO Auto-generated catch block
+				log.info("报错："+e.getMessage());
+				e.printStackTrace();
+			} catch (RemotingException e) {
+				log.info("报错："+e.getMessage());
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MQBrokerException e) {
+				log.info("报错："+e.getMessage());
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				log.info("报错："+e.getMessage());
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
         	return Result.ok();
         }else{
         	return Result.error("验证失败");
