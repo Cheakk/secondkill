@@ -18,7 +18,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/css/**").permitAll()
 				.antMatchers("/user/**").hasRole("USER")
 				.antMatchers("/index.shtml").hasRole("USER")
-				.antMatchers("/seckillPage/**").permitAll())
+				.antMatchers("/second").hasRole("USER")
+				.antMatchers("/seckillPage/**").hasRole("USER"))
 				.formLogin((formLogin) -> formLogin.loginPage("/login").failureUrl("/login-error"));
 	}
 

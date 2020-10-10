@@ -6,8 +6,9 @@
 <link th:href="@{/goods/style/shopdetail.css}" rel="stylesheet" type="text/css">
 <script th:src="@{/goods/js/jquery-1.9.1.min.js}"></script>
 <script th:src="@{/goods/js/common.js}"></script>
-<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+<script src="//captcha.luosimao.com/static/dist/api.js"></script>
 <script type="text/javascript">
+
   $(document).ready(function(){
 	  var showproduct = {
 		  "boxid":"showbox",
@@ -49,15 +50,43 @@
 	      }
 	}
 	function startSeckill(res){
+		var schoolList={'response':res,'actId':'act1','skuId':'sku1','buyNum':1
+				}
 	  	$.ajax({
 	  		url : "seckillPage/startSeckill",
 	  		type : 'post',
-	  		data : {'ticket' : res.ticket,'randstr':res.randstr},
+	  		data : JSON.stringify(schoolList),
+	  		contentType:'application/json;charset=utf-8',
+			dataType:'json',
 	  		success : function(result) {
-	  			alert(result.code)
+	  			if(result.code = '0' ){
+	  				popBox();
+	  			}else {
+	  			alert(result.msg)
+	  			}
 	  		}
 	  	});
 	}
+	function getResponse(resp){
+	     console.log(resp);  // resp 即验证成功后获取的值
+	     startSeckill(resp);
+	}
+	
+	 /*点击弹出按钮*/
+    function popBox() {
+        var popBox = document.getElementById("popBox");
+        var popLayer = document.getElementById("popLayer");
+        popBox.style.display = "block";
+        popLayer.style.display = "block";
+    };
+ 
+    /*点击关闭按钮*/
+    function closeBox() {
+        var popBox = document.getElementById("popBox");
+        var popLayer = document.getElementById("popLayer");
+        popBox.style.display = "none";
+        popLayer.style.display = "none";
+    }
 </script>
 </head>
 <body>
@@ -66,10 +95,62 @@ A.applink:hover {border: 2px dotted #DCE6F4;padding:2px;background-color:#ffff00
 A.applink       {border: 2px dotted #DCE6F4;padding:2px;color:#2F5BFF;background:transparent;text-decoration:none}
 A.info          {color:#2F5BFF;background:transparent;text-decoration:none}
 A.info:hover    {color:green;background:transparent;text-decoration:underline}
+        /*背景层*/
+        #popLayer {
+            display: none;
+            background-color: #B3B3B3;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 10;
+            -moz-opacity: 0.8;
+            opacity:.80;
+            filter: alpha(opacity=80);/* 只支持IE6、7、8、9 */
+        }
+ 
+        /*弹出层*/
+        #popBox {
+            display: none;
+            background-color: #FFFFFF;
+            z-index: 11;
+            width: 200px;
+            height: 200px;
+            position:fixed;
+            top:0;
+            right:0;
+            left:0;
+            bottom:0;
+            margin:auto;
+        }
+ 
+        #popBox .close{
+            text-align: right;
+            margin-right: 5px;
+            background-color: #F8F8F8;
+        }
+ 
+        /*关闭按钮*/
+        #popBox .close a {
+            text-decoration: none;
+            color: #2D2C3B;
+        }
+ 
 </style>
 
+<input type="button" name="popBox" value="弹出框" onclick="popBox()">
+<div id="popLayer"></div>
+<div id="popBox">
+    <div class="">
+        <a href="http://www.riceful.top:8887/spring-boot-pay/alipay/index.html" >立即支付</a>
+        <a href="javascript:void(0)" onclick="closeBox()">稍后支付</a>
+    </div>
+</div>
 <div class="header">
 <div class="top">
+
+
 	<div class="top1">
 		<a href="https://blog.52itstyle.com/">登录</a>
         <a href="https://blog.52itstyle.com/">注册</a>
@@ -137,7 +218,8 @@ A.info:hover    {color:green;background:transparent;text-decoration:underline}
         </ul>
         <div class="clear"></div>
         <p class="chima">尺码：</p>
-        <p class="buy"><a href="#" id="TencentCaptcha" data-appid="2042633230" data-cbfn="callback">立即购买</a><a href="#">加入购物车</a></p>
+        <div class="l-captcha" data-site-key="6c8e3b6d76272d7bf88de86f211e701b" data-callback="getResponse"></div>
+        <p class="buy"><a>立即购买</a></p>
    		<div class="clear"></div>
         <div class="fenx"><a href="#"><img src="goods/images/shopdetail/tell07.png"></a></div>
         <p class="fuwu">服务承诺：</p>
